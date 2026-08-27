@@ -160,7 +160,7 @@ agentic-rag-system/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/JohnnyWilson-Portfolio/agentic-rag-system.git
+git clone https://github.com/JohnnyWilson16/agentic-rag-system.git
 cd agentic-rag-system
 ```
 
