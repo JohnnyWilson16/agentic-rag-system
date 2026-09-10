@@ -7,6 +7,8 @@ PDF -> Document Loader -> Chunking -> Embeddings -> Chroma Vector DB -> Retrieve
 
 import os
 import sys
+import time
+import textwrap
 from pathlib import Path
 
 # Setup paths and environment BEFORE importing streamlit or third-party packages
@@ -31,7 +33,6 @@ try:
 except Exception:
     pass
 
-import time
 import streamlit as st
 from agentic_rag.demo_engine import DemoEngine, AgentExecutionResult
 
@@ -42,6 +43,14 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+def render_html(html_str: str):
+    """
+    Renders dedented HTML cleanly in Streamlit without triggering
+    Markdown's 4-space code block formatting.
+    """
+    st.markdown(textwrap.dedent(html_str).strip(), unsafe_allow_html=True)
+
 
 # Initialize Demo Engine
 @st.cache_resource
@@ -54,19 +63,16 @@ engine = get_engine()
 if "query" not in st.session_state:
     st.session_state.query = "How did the company perform financially?"
 if "last_result" not in st.session_state:
-    # Run a default query so the application immediately loads with a complete, impressive state
     st.session_state.last_result = engine.run_agentic_query(st.session_state.query)
-if "is_running" not in st.session_state:
-    st.session_state.is_running = False
+if "run_now" not in st.session_state:
+    st.session_state.run_now = False
 
 # Premium Dark CSS Injection
-st.markdown(
+render_html(
     """
     <style>
-    /* Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-    /* Global styling */
     html, body, [class*="css"] {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         color: #E2E8F0;
@@ -77,7 +83,6 @@ st.markdown(
         background: radial-gradient(circle at 50% 0%, #0F1D36 0%, #080C14 70%) !important;
     }
 
-    /* Hide default Streamlit clutter */
     #MainMenu, header, footer {visibility: hidden;}
     .block-container {
         padding-top: 1.5rem !important;
@@ -124,7 +129,6 @@ st.markdown(
         margin-bottom: 14px;
     }
 
-    /* Pulse Status Indicator */
     .status-badge {
         display: inline-flex;
         align-items: center;
@@ -154,7 +158,6 @@ st.markdown(
         50% { transform: scale(1.4); opacity: 0.5; }
     }
 
-    /* Technology Badges */
     .badge-row {
         display: flex;
         gap: 8px;
@@ -187,17 +190,6 @@ st.markdown(
         padding: 8px 14px;
         border-radius: 0 8px 8px 0;
         font-weight: 500;
-    }
-
-    /* Workspace Glass Cards */
-    .glass-card {
-        background: rgba(15, 23, 42, 0.75);
-        border: 1px solid rgba(56, 189, 248, 0.12);
-        border-radius: 14px;
-        padding: 22px;
-        margin-bottom: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.45);
     }
 
     .card-header-title {
@@ -594,7 +586,6 @@ st.markdown(
         font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Override Streamlit button styling */
     div.stButton > button {
         background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
         color: #FFFFFF !important;
@@ -616,16 +607,6 @@ st.markdown(
         transform: translateY(-1px) !important;
     }
 
-    /* Prompt Chips styling */
-    .chip-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 10px;
-        margin-bottom: 14px;
-    }
-
-    /* Streamlit text input styling */
     .stTextInput > div > div > input {
         background-color: rgba(15, 23, 42, 0.9) !important;
         color: #F8FAFC !important;
@@ -640,8 +621,7 @@ st.markdown(
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
     }
     </style>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 # ==============================================================================
@@ -649,7 +629,7 @@ st.markdown(
 # ==============================================================================
 status_meta = engine.get_status()
 
-st.markdown(
+render_html(
     f"""
     <div class="hero-card">
         <div class="hero-top-row">
@@ -675,8 +655,7 @@ st.markdown(
             <strong>Core Value Proposition:</strong> Instead of answering from memory, the agent decides when it needs evidence.
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 # ==============================================================================
@@ -684,7 +663,7 @@ st.markdown(
 # ==============================================================================
 res: AgentExecutionResult = st.session_state.last_result
 
-st.markdown(
+render_html(
     f"""
     <div class="metrics-strip">
         <div class="strip-metric">
@@ -712,8 +691,7 @@ st.markdown(
             <span class="strip-metric-val">{res.metrics['total_pipeline_time_s']} s</span>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 # ==============================================================================
@@ -725,10 +703,10 @@ col_left, col_right = st.columns([1.05, 1.15], gap="large")
 # LEFT COLUMN: ASK THE AGENT
 # ------------------------------------------------------------------------------
 with col_left:
-    st.markdown('<div class="card-header-title cyan">⚡ Ask the Agent</div>', unsafe_allow_html=True)
+    render_html('<div class="card-header-title cyan">⚡ Ask the Agent</div>')
 
-    # Example Prompt Buttons (Click to populate instantly)
-    st.markdown("<div style='font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 600;'>TRY ASKING:</div>", unsafe_allow_html=True)
+    # Example Prompt Buttons (Click to populate and run instantly)
+    render_html("<div style='font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 600;'>TRY ASKING:</div>")
     
     p1, p2 = st.columns(2)
     p3, p4 = st.columns(2)
@@ -763,15 +741,14 @@ with col_left:
     run_clicked = st.button("RUN AGENT ➔", key="run_agent_btn")
 
     # Document & Retriever Metadata Tags
-    st.markdown(
+    render_html(
         """
         <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
             <span class="tech-badge">📄 Document: Annual Report 2025-2026</span>
             <span class="tech-badge cyan">💾 Knowledge Base: ChromaDB</span>
             <span class="tech-badge">🔍 Retriever: Top 3 Chunks</span>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # Collapsible Ingestion Section for New Documents
@@ -803,16 +780,14 @@ with col_left:
 # RIGHT COLUMN: AGENT ACTIVITY TIMELINE
 # ------------------------------------------------------------------------------
 with col_right:
-    st.markdown('<div class="card-header-title cyan">🤖 Agent Activity & Reasoning Timeline</div>', unsafe_allow_html=True)
+    render_html('<div class="card-header-title cyan">🤖 Agent Activity & Reasoning Timeline</div>')
 
     # Check if run triggered
     if run_clicked or st.session_state.get("run_now", False):
         st.session_state.run_now = False
         
-        # Progressive Animation Placeholder
         timeline_placeholder = st.empty()
         
-        # Stage-by-stage progressive disclosure animation
         step_descriptions = [
             ("01", "UNDERSTAND QUESTION", "Deconstructing question intent & planning information requirements...", "Intent Classified"),
             ("02", "DECIDE TO SEARCH", "Agent evaluated memory vs grounding need: Decided to retrieve authoritative report sections.", "Decision: Search"),
@@ -823,11 +798,10 @@ with col_right:
         ]
 
         for i in range(1, 7):
-            active_html = ['<div class="timeline-container">']
+            active_cards = []
             for s_num, s_title, s_desc, s_badge in step_descriptions[:i]:
-                active_html.append(
-                    f"""
-                    <div class="timeline-item active">
+                active_cards.append(
+                    f"""<div class="timeline-item active">
                         <span class="timeline-num">{s_num}</span>
                         <div class="timeline-content">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -836,20 +810,18 @@ with col_right:
                             </div>
                             <div class="timeline-desc">{s_desc}</div>
                         </div>
-                    </div>
-                    """
+                    </div>"""
                 )
-            active_html.append('</div>')
-            timeline_placeholder.markdown("\n".join(active_html), unsafe_allow_html=True)
+            full_active_html = f'<div class="timeline-container">{"".join(active_cards)}</div>'
+            timeline_placeholder.markdown(textwrap.dedent(full_active_html).strip(), unsafe_allow_html=True)
             time.sleep(0.12)
 
-        # Run the actual engine query
         st.session_state.last_result = engine.run_agentic_query(st.session_state.query)
         st.rerun()
 
-    # Display Current Agent Decision & Timeline
-    st.markdown(
-        f"""
+    # Crucial Agentic Decision Box
+    render_html(
+        """
         <div class="decision-box">
             <div class="decision-icon">⚙️</div>
             <div>
@@ -858,16 +830,14 @@ with col_right:
                 <div style="font-size: 0.76rem; color: #94A3B8; margin-top: 3px;">Autonomous tool selection triggered to ground response in authoritative report metrics.</div>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # Render Persistent Execution Timeline
-    timeline_html = ['<div class="timeline-container">']
+    timeline_items_html = []
     for step in res.timeline_steps:
-        timeline_html.append(
-            f"""
-            <div class="timeline-item">
+        timeline_items_html.append(
+            f"""<div class="timeline-item">
                 <span class="timeline-num">{step['step_num']}</span>
                 <div class="timeline-content">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -876,82 +846,85 @@ with col_right:
                     </div>
                     <div class="timeline-desc">{step['description']}</div>
                 </div>
-            </div>
-            """
+            </div>"""
         )
-    timeline_html.append('</div>')
-    st.markdown("\n".join(timeline_html), unsafe_allow_html=True)
+    render_html(f'<div class="timeline-container">{"".join(timeline_items_html)}</div>')
 
 # ==============================================================================
-# 4. FINAL ANSWER AREA
+# 4. FINAL ANSWER AREA (COMPLETE SELF-CONTAINED HTML CARD)
 # ==============================================================================
 st.markdown("<br>", unsafe_allow_html=True)
 
-st.markdown(
-    f"""
-    <div class="answer-card">
-        <div class="answer-header">
-            <div class="answer-title">
-                <span style="color: #38BDF8;">✦</span> AGENT ANSWER
-            </div>
-            <div style="font-size: 0.75rem; color: #94A3B8; font-family: 'JetBrains Mono', monospace;">
-                Grounding Status: <span style="color: #34D399; font-weight: 700;">100% VERIFIED BY EVIDENCE</span>
-            </div>
-        </div>
-
-        <!-- Section 1: Executive Summary -->
-        <div class="section-label">Executive Summary</div>
-        <div class="exec-summary-text">
-            {res.executive_summary}
-        </div>
-
-        <!-- Section 2: Important Numbers Metric Cards -->
-        <div class="section-label">Important Numbers</div>
-        <div class="metric-grid">
-    """,
-    unsafe_allow_html=True,
-)
-
-# Render Metric Cards in Grid
+# Build metric cards
 metric_cards_html = []
 for num in res.important_numbers:
     metric_cards_html.append(
-        f"""
-        <div class="metric-card">
+        f"""<div class="metric-card">
             <div class="metric-label">{num['label']}</div>
             <div class="metric-value">{num['value']}</div>
             <div class="metric-footer">
                 <span class="metric-change">{num['change']}</span>
                 <span class="metric-cite">{num['citation']}</span>
             </div>
-        </div>
-        """
+        </div>"""
     )
-st.markdown("".join(metric_cards_html) + "</div>", unsafe_allow_html=True)
+metrics_grid_html = "".join(metric_cards_html)
 
-# Render Key Findings
-st.markdown('<div class="section-label">Key Findings</div>', unsafe_allow_html=True)
-for kf in res.key_findings:
-    st.markdown(f"- {kf}")
+# Build list items
+kf_items_html = "".join([f'<li style="margin-bottom: 8px; color: #CBD5E1;">{kf}</li>' for kf in res.key_findings])
+risks_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{rk}</li>' for rk in res.risks_concerns])
+outlook_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{ot}</li>' for ot in res.outlook])
 
-# Render Risks & Outlook in side-by-side columns
-risk_col, outlook_col = st.columns(2)
-with risk_col:
-    st.markdown('<div class="section-label" style="color: #F87171;">Risks / Concerns</div>', unsafe_allow_html=True)
-    for rk in res.risks_concerns:
-        st.markdown(f"- {rk}")
+# Render the entire answer area as one cohesive, cleanly rendered card
+full_answer_card_html = f"""
+<div class="answer-card">
+    <div class="answer-header">
+        <div class="answer-title">
+            <span style="color: #38BDF8;">✦</span> AGENT ANSWER
+        </div>
+        <div style="font-size: 0.75rem; color: #94A3B8; font-family: 'JetBrains Mono', monospace;">
+            Grounding Status: <span style="color: #34D399; font-weight: 700;">100% VERIFIED BY EVIDENCE</span>
+        </div>
+    </div>
 
-with outlook_col:
-    st.markdown('<div class="section-label" style="color: #34D399;">Outlook & Forward Guidance</div>', unsafe_allow_html=True)
-    for ot in res.outlook:
-        st.markdown(f"- {ot}")
+    <div class="section-label">Executive Summary</div>
+    <div class="exec-summary-text">
+        {res.executive_summary}
+    </div>
 
-st.markdown("</div>", unsafe_allow_html=True)
+    <div class="section-label">Important Numbers</div>
+    <div class="metric-grid">
+        {metrics_grid_html}
+    </div>
+
+    <div class="section-label">Key Findings</div>
+    <ul style="padding-left: 20px; line-height: 1.6; margin-top: 6px;">
+        {kf_items_html}
+    </ul>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(248, 113, 113, 0.25); border-radius: 10px; padding: 16px;">
+            <div class="section-label" style="color: #F87171; margin-top: 0;">Risks / Concerns</div>
+            <ul style="padding-left: 18px; margin: 0; line-height: 1.5; font-size: 0.88rem;">
+                {risks_items_html}
+            </ul>
+        </div>
+        <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 10px; padding: 16px;">
+            <div class="section-label" style="color: #34D399; margin-top: 0;">Outlook & Forward Guidance</div>
+            <ul style="padding-left: 18px; margin: 0; line-height: 1.5; font-size: 0.88rem;">
+                {outlook_items_html}
+            </ul>
+        </div>
+    </div>
+</div>
+"""
+
+render_html(full_answer_card_html)
 
 # ==============================================================================
 # 5. EVIDENCE PANEL: WHY I BELIEVE THIS
 # ==============================================================================
-st.markdown(
+render_html(
     """
     <div style="margin-top: 10px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
         <div class="card-header-title cyan" style="margin-bottom: 0;">
@@ -961,14 +934,13 @@ st.markdown(
             Flow: <strong>Answer ➔ Evidence ➔ Document Chunk</strong>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 for chunk in res.retrieved_chunks:
     relevance_pct = int(chunk.relevance_score * 100)
     with st.expander(f"📌 {chunk.title} — {chunk.file_name} (Page {chunk.page}) — Relevance: {chunk.relevance_score}", expanded=(chunk.source_id == 1)):
-        st.markdown(
+        render_html(
             f"""
             <div class="source-card">
                 <div class="source-header-row">
@@ -982,15 +954,14 @@ for chunk in res.retrieved_chunks:
                     Length: {chunk.char_count} chars • Distance Metric: {chunk.distance} • Cosine Normalized
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
 # ==============================================================================
 # 6. UNDER THE HOOD ARCHITECTURE
 # ==============================================================================
 with st.expander("🛠️ HOW THE SYSTEM WORKS — UNDER THE HOOD ARCHITECTURE", expanded=False):
-    st.markdown(
+    render_html(
         """
         <div style="font-size: 0.88rem; color: #94A3B8; margin-bottom: 12px;">
             End-to-End architectural pipeline executing from raw PDF ingestion to verifiable agent answers:
@@ -1043,15 +1014,14 @@ with st.expander("🛠️ HOW THE SYSTEM WORKS — UNDER THE HOOD ARCHITECTURE",
                 <div class="arch-step-desc">5-section evidence-backed executive report</div>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
 # ==============================================================================
 # 7. TRADITIONAL RAG VS AGENTIC RAG
 # ==============================================================================
 with st.expander("⚖️ TRADITIONAL RAG VS AGENTIC RAG — THE PARADIGM SHIFT", expanded=False):
-    st.markdown(
+    render_html(
         """
         <div class="comp-container">
             <div class="comp-box">
@@ -1080,6 +1050,5 @@ with st.expander("⚖️ TRADITIONAL RAG VS AGENTIC RAG — THE PARADIGM SHIFT",
         <div style="text-align: center; font-size: 0.88rem; color: #38BDF8; font-weight: 600; padding: 6px; background: rgba(56, 189, 248, 0.08); border-radius: 6px;">
             "The agent decides when retrieval is needed, turning passive search into active investigation."
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )

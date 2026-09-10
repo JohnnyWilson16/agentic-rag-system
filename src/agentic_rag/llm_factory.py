@@ -6,8 +6,7 @@ Provides seamless fallback from local Ollama to high-speed cloud providers (Groq
 """
 
 import os
-from typing import Optional
-from crewai import LLM
+from typing import Any, Optional
 from agentic_rag.config import Settings, get_settings
 
 
@@ -19,7 +18,7 @@ class LLMFactory:
         settings: Optional[Settings] = None,
         override_model: Optional[str] = None,
         override_provider: Optional[str] = None,
-    ) -> LLM:
+    ) -> Any:
         """
         Builds a CrewAI LLM instance based on application settings.
 
@@ -31,6 +30,8 @@ class LLMFactory:
         Returns:
             Configured crewai.LLM instance.
         """
+        from crewai import LLM
+
         cfg = settings or get_settings()
         provider = (override_provider or cfg.llm_provider).lower()
         model_name = override_model or cfg.llm_model
