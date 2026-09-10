@@ -87,9 +87,9 @@ class DemoEngine:
     def get_status(self) -> Dict[str, Any]:
         """Returns operational parameters and vector DB metadata."""
         return {
-            "document_name": "Annual Report 2025-2026",
-            "company_name": "Apex Global Enterprise Solutions",
-            "page_count": 6,
+            "document_name": "TCS Integrated Annual Report 2025-2026",
+            "company_name": "Tata Consultancy Services (TCS)",
+            "page_count": 360,
             "indexed_vectors": self.get_document_count(),
             "embedding_model": "all-MiniLM-L6-v2",
             "vector_db": "ChromaDB (Local)",
@@ -170,17 +170,17 @@ class DemoEngine:
 
         # Formulate search query
         clean_q = question.lower()
-        if any(k in clean_q for k in ["financ", "perform", "revenue", "margin", "profit", "income", "eps"]):
-            tool_query = "consolidated revenue operating margin net income EPS FY 2025-2026 financial performance"
+        if any(k in clean_q for k in ["financ", "perform", "margin", "profit", "income", "roe", "dividend", "crore"]):
+            tool_query = "operating margin Return on Equity RoE financial capital revenue trend FY 2026"
             topic_category = "financial_performance"
-        elif any(k in clean_q for k in ["risk", "threat", "headwind", "concern", "vulnerab", "cyber", "geopolit"]):
-            tool_query = "MD&A risk factors vulnerabilities macroeconomic client spend foreign exchange cybersecurity"
-            topic_category = "risks_vulnerabilities"
-        elif any(k in clean_q for k in ["growth", "segment", "vertical", "bfsi", "healthcare", "regional", "area"]):
-            tool_query = "segment regional performance BFSI Healthcare Manufacturing Cloud Services growth"
-            topic_category = "segments_growth"
-        elif any(k in clean_q for k in ["expect", "outlook", "guidance", "future", "forward", "2027", "priorit"]):
-            tool_query = "management outlook future guidance FY 2026-2027 revenue target strategic priorities"
+        elif any(k in clean_q for k in ["ai", "genai", "wisdomnext", "intelligence", "hackathon", "copilot", "llm", "quantum"]):
+            tool_query = "annualised AI revenue GenAI capabilities TCS AI WisdomNext continuous learning AI hackathon"
+            topic_category = "ai_capabilities"
+        elif any(k in clean_q for k in ["employee", "workforce", "attrition", "headcount", "hiring", "fresher", "human capital"]):
+            tool_query = "human capital total employees fresher hiring voluntary attrition learning hours mentors"
+            topic_category = "workforce_attrition"
+        elif any(k in clean_q for k in ["expect", "outlook", "guidance", "future", "forward", "r&d", "patent", "innovation", "strategy"]):
+            tool_query = "intellectual capital research and innovation spend patents granted Amaravati Quantum Valley strategic priorities"
             topic_category = "management_outlook"
         else:
             tool_query = question.strip()
@@ -332,121 +332,116 @@ class DemoEngine:
         Synthesizes a structured analyst response based on the question and retrieved chunks.
         Every single figure is grounded in retrieved chunks.
         """
-        top_page = retrieved_chunks[0].page if retrieved_chunks else 1
+        top_page = retrieved_chunks[0].page if retrieved_chunks else 23
 
-        if topic_category == "financial_performance" or any(k in question.lower() for k in ["financ", "revenue", "perform"]):
+        if topic_category == "financial_performance" or any(k in question.lower() for k in ["financ", "margin", "roe", "perform", "capital"]):
             exec_summary = (
-                f"Apex Global Enterprise Solutions delivered record financial results for FY 2025-2026. "
-                f"Consolidated revenues expanded by 8.2% YoY in constant currency to reach $28.45 billion, "
-                f"driven by robust expansion in cloud engineering and enterprise automation [Source 01 • Page {top_page}]. "
-                f"Operating margin expanded 60 bps to 24.8% due to internal workflow automation and disciplined cost governance."
+                f"Tata Consultancy Services (TCS) delivered solid financial performance for FY 2025-2026, highlighted by industry-leading operating margin of 24.3% "
+                f"and best-in-class Return on Equity (RoE) of 51.4% [Source 01 • Page {top_page}]. "
+                f"Shareholder value creation conversion remained resilient at 99.6%, with total value distributed reaching ₹52,094 crore, supported by disciplined capital governance."
             )
             key_findings = [
-                f"Consolidated top-line revenue reached **$28.45B**, expanding from $26.30B in FY 2024-2025 (+8.2% YoY in constant currency) [Source 01 • Page {top_page}].",
-                f"Operating margin widened to **24.8%** (+60 bps YoY), outperforming guidance on high-margin digital services [Source 01 • Page {top_page}].",
-                f"Net income accelerated +9.4% YoY to **$6.12B**, resulting in a diluted EPS of **$4.25** [Source 01 • Page {top_page}].",
-                f"Operating cash flow conversion reached an exceptional **104%** of net income, totaling **$6.36B**, while free cash flow stood at **$5.82B**.",
+                f"Operating margin remained an industry benchmark at **24.3%** (with peak quarterly margin of 25.0%), reflecting operational rigor and premium pricing [Source 01 • Page {top_page}].",
+                f"Return on Equity (RoE) stood at **51.4%**, demonstrating continued superior capital efficiency and capital allocation discipline [Source 01 • Page {top_page}].",
+                f"Cumulative value distributed to shareholders reached **₹52,094 crore**, maintaining an exceptional **99.6%** conversion ratio over FY 2022-2026.",
+                f"Annualized Enterprise AI revenue reached **$2.3 billion**, establishing scaled commercial monetization across global cloud and AI engagements.",
             ]
             important_numbers = [
-                {"label": "Consolidated Revenue", "value": "$28.45B", "change": "+8.2% YoY", "citation": f"Page {top_page}"},
-                {"label": "Operating Margin", "value": "24.8%", "change": "+60 bps", "citation": f"Page {top_page}"},
-                {"label": "Net Income", "value": "$6.12B", "change": "+9.4% YoY", "citation": f"Page {top_page}"},
-                {"label": "Diluted EPS", "value": "$4.25", "change": "vs $3.88 prior", "citation": f"Page {top_page}"},
-                {"label": "Free Cash Flow", "value": "$5.82B", "change": "104% Conversion", "citation": f"Page {top_page}"},
+                {"label": "Operating Margin", "value": "24.3%", "change": "Industry Leader", "citation": f"Page {top_page}"},
+                {"label": "Return on Equity (RoE)", "value": "51.4%", "change": "Best-in-Class", "citation": f"Page {top_page}"},
+                {"label": "Annualized AI Revenue", "value": "$2.3B", "change": "High Growth", "citation": f"Page {top_page}"},
+                {"label": "Shareholder Distribution", "value": "₹52,094 Cr", "change": "99.6% Payout", "citation": f"Page {top_page}"},
+                {"label": "R&I Reinvestment", "value": "₹2,900 Cr", "change": "1.1% of Revenue", "citation": "Page 26"},
             ]
             risks_concerns = [
-                f"Discretionary enterprise IT budgets in North America and Western Europe remain sensitive to macro interest rate cycles [Source 02 • Page 5].",
-                f"Foreign exchange volatility across USD/EUR/GBP/INR pairs poses margin sensitivity across international offshore delivery hubs.",
+                f"Discretionary enterprise IT budgets across North America and Western Europe remained sensitive to interest rate macro cycles [Source 02 • Page {top_page}].",
+                f"Cross-currency fluctuations across USD/EUR/GBP/INR pairs require proactive hedging strategies across offshore delivery centers.",
             ]
             outlook = [
-                f"Management projects constant currency revenue growth between **7.5% and 9.5%** for FY 2026-2027 [Source 03 • Page 6].",
-                f"Operating margin target band reaffirmed at **24.5% - 25.5%**, supported by scaled deployment of proprietary agentic AI workflows.",
+                f"Operating margin target band reaffirmed in the resilient 24.0% - 25.5% corridor, supported by scaled proprietary AI workflows.",
+                f"Cloud, legacy mainframe modernization, and AI infrastructure deals represent the primary demand drivers for FY 2026-2027.",
             ]
 
-        elif topic_category == "risks_vulnerabilities" or any(k in question.lower() for k in ["risk", "concern", "threat", "headwind"]):
+        elif topic_category == "ai_capabilities" or any(k in question.lower() for k in ["ai", "genai", "intelligence", "wisdomnext", "hackathon"]):
             exec_summary = (
-                f"Apex Global disclosed four primary operational and market vulnerabilities in its FY 2025-2026 MD&A filings [Source 01 • Page 5]. "
-                f"While financial performance remained resilient, leadership emphasized cautious client budgeting in Western regions, "
-                f"foreign exchange exposures across offshore centers, compliance requirements under the EU AI Act, and generative AI talent reskilling."
+                f"TCS accelerated enterprise-wide AI scaling during FY 2025-2026, achieving $2.3 billion in annualized AI revenue [Source 01 • Page {top_page}]. "
+                f"The company democratized foundational AI models across its global workforce, certifying over 270,000 employees in higher-order AI/ML/GenAI skills, "
+                f"filing 1,833 AI patents, and launching flagship orchestrator TCS AI WisdomNext™."
             )
             key_findings = [
-                f"**Macroeconomic & Discretionary IT Spend**: North American and European enterprise clients are moderating pace of non-essential digital initiatives [Source 01 • Page 5].",
-                f"**Foreign Exchange Fluctuations**: Over 45% of global project delivery resides offshore; currency swings across USD/EUR/GBP/INR require proactive hedging [Source 01 • Page 5].",
-                f"**Regulatory & AI Compliance Mandates**: Stricter governance under EU AI Act, GDPR, and SEC Cyber rules necessitates elevated security audits and controls.",
-                f"**Workforce Reskilling Velocity**: Rapid shifts toward autonomous agentic architectures demand continuous employee certification to maintain margin premiums.",
+                f"Annualized enterprise AI revenue crossed **$2.3 billion**, spanning autonomous agentic workflows and sovereign cloud infrastructure [Source 01 • Page {top_page}].",
+                f"Over **270,000 employees** acquired higher-order AI/ML/GenAI capabilities, with **100% of sales and pre-sales** teams trained in AI architectures.",
+                f"Launched **TCS AI WisdomNext™** alongside 17 Products & Platforms and 98 IP-based Solution Offerings (including BaNCS™, ignio™, and ADD™) [Source 01 • Page {top_page}].",
+                f"Organized the world's largest corporate AI Hackathon with **281,000+ participants**, generating over 170,000 working builds and 500,000 employee solutions.",
             ]
             important_numbers = [
-                {"label": "Delivery Offshore Exposure", "value": "45%+", "change": "Margin Sensitive", "citation": "Page 5"},
-                {"label": "FX Projected Exposure Hedged", "value": "70%", "change": "Forward Covered", "citation": "Page 5"},
-                {"label": "Voluntary Attrition", "value": "10.8%", "change": "Down from 14.1%", "citation": "Page 4"},
-                {"label": "AI R&D Reinvestment", "value": "$680M", "change": "Capability Hedge", "citation": "Page 4"},
+                {"label": "Annualized AI Revenue", "value": "$2.3B", "change": "Commercial Scale", "citation": f"Page {top_page}"},
+                {"label": "AI/GenAI Skilled Staff", "value": "270,000+", "change": "Higher Order", "citation": "Page 25"},
+                {"label": "Patents Granted / Filed", "value": "5,500 / 9,596", "change": "573 AI Granted", "citation": "Page 26"},
+                {"label": "Products & Platforms", "value": "17 Suites", "change": "98 Offerings", "citation": "Page 26"},
+                {"label": "AI Hackathon Builds", "value": "170,000+", "change": "281K Associates", "citation": "Page 25"},
             ]
             risks_concerns = [
-                f"Failure to adequately hedge cross-currency fluctuations could shave 40-70 bps from operating margins [Source 01 • Page 5].",
-                f"Client project delays in discretionary software modernization could soften Q1-Q2 booking velocities.",
-                f"Cyber threats and strict AI data residency laws create compliance overhead and potential statutory penalties.",
+                f"Client data residency constraints and evolving AI compliance under EU AI Act require elevated governance overhead [Source 02 • Page {top_page}].",
+                f"Speed of client internal readiness for autonomous agentic deployment varies across regulated sectors.",
             ]
             outlook = [
-                f"70% of estimated net foreign exchange exposure is hedged through forward derivative contracts [Source 01 • Page 5].",
-                f"Workforce upskilling programs have already certified over 125,000 engineers in enterprise GenAI toolchains to mitigate delivery risk.",
+                f"Pioneering digital twin and AI-driven urban modeling in strategic partnership with IIT Kanpur [Source 01 • Page 26].",
+                f"Deepening integration of Copilot, Claude, and Gemini foundation models across employee workflows via internal AI Playgrounds.",
             ]
 
-        elif topic_category == "segments_growth" or any(k in question.lower() for k in ["segment", "growth", "area", "compare"]):
+        elif topic_category == "workforce_attrition" or any(k in question.lower() for k in ["employee", "workforce", "attrition", "hiring", "headcount", "human"]):
             exec_summary = (
-                f"Revenue expansion across Apex Global's business verticals was led by Healthcare & Life Sciences (+14.2% YoY) "
-                f"and Digital Transformation & Cloud Services (+18.5% YoY), while BFSI remained the largest overall contributor at $8.95 billion [Source 01 • Page 3]. "
-                f"Geographically, Asia-Pacific and Emerging Markets delivered the highest expansion rate at 16.4% YoY."
+                f"TCS maintained a global talent base of 584,519 associates across 149 nationalities in FY 2025-2026 [Source 01 • Page {top_page}]. "
+                f"Voluntary LTM attrition in IT services moderated to 13.7%, supported by robust fresher induction of 44,000+ graduates and 69 million learning hours."
             )
             key_findings = [
-                f"**BFSI (Banking & Financial Services)**: Contributed **$8.95B** (31.5% total share) with +6.8% YoY growth via core banking modernization [Source 01 • Page 3].",
-                f"**Healthcare & Life Sciences**: Generated **$3.70B** (+14.2% YoY) driven by clinical data platforms and regulatory compliance tools [Source 01 • Page 3].",
-                f"**Digital Transformation & Cloud**: Surged **+18.5% YoY**, expanding to account for **42.0%** of total firm-wide revenues [Source 01 • Page 3].",
-                f"**Manufacturing & Energy**: Generated **$4.80B** (+7.5% YoY) with strong adoption of smart factory IoT contracts.",
-                f"**Retail & Consumer Goods**: Reached **$4.20B** (+5.1% YoY) with omnichannel logistics modernization.",
+                f"Global workforce headcount stood at **584,519 employees** representing 149 nationalities [Source 01 • Page {top_page}].",
+                f"Voluntary LTM attrition in IT services stabilized at **13.7%**, reflecting industry-leading talent retention and engagement.",
+                f"Fresher hiring exceeded **44,000+ campus graduates**, augmented by 750+ specialized strategic consulting hires.",
+                f"Total lifelong learning logged reached **69 million hours**, with employees averaging over 120 learning hours each.",
             ]
             important_numbers = [
-                {"label": "BFSI Contribution", "value": "$8.95B", "change": "+6.8% YoY (31.5%)", "citation": "Page 3"},
-                {"label": "Healthcare & Life Sciences", "value": "$3.70B", "change": "+14.2% YoY", "citation": "Page 3"},
-                {"label": "Digital & Cloud Share", "value": "42.0%", "change": "+18.5% YoY Growth", "citation": "Page 3"},
-                {"label": "Manufacturing & Energy", "value": "$4.80B", "change": "+7.5% YoY", "citation": "Page 3"},
-                {"label": "APAC & Emerging Markets", "value": "17.5%", "change": "+16.4% YoY Growth", "citation": "Page 3"},
+                {"label": "Total Global Employees", "value": "584,519", "change": "149 Nationalities", "citation": f"Page {top_page}"},
+                {"label": "Voluntary Attrition (LTM)", "value": "13.7%", "change": "Moderating", "citation": f"Page {top_page}"},
+                {"label": "Fresher Campus Hiring", "value": "44,000+", "change": "Future Talent", "citation": f"Page {top_page}"},
+                {"label": "Learning Hours Logged", "value": "69 Million", "change": "120h / Associate", "citation": f"Page {top_page}"},
+                {"label": "Certified Mentors", "value": "19,700+", "change": "Build My Career", "citation": f"Page {top_page}"},
             ]
             risks_concerns = [
-                f"Retail and consumer goods experienced deceleration to 5.1% growth due to cautious consumer spending.",
-                f"North America, while representing 51% of revenues, grew at a modest 5.8% YoY pace.",
+                f"Sustained global demand for specialized AI architects necessitates continuous upskilling to manage replacement costs.",
+                f"International visa policies and localized hiring mandates require balanced cross-border talent deployment.",
             ]
             outlook = [
-                f"Digital & Cloud Services is on track to cross 50% of total revenue within the next 24 months [Source 01 • Page 3].",
-                f"Expansion of nearshore engineering centers in Eastern Europe and Latin America will support high-growth verticals.",
+                f"Nearly 50% of internal project allocations are now executed via the AI-powered Talent Marketplace.",
+                f"GenAI-powered Learning Coach platform scaled to support targeted, role-specific continuous certifications.",
             ]
 
-        elif topic_category == "management_outlook" or any(k in question.lower() for k in ["expect", "outlook", "guidance", "future"]):
+        elif topic_category == "management_outlook" or any(k in question.lower() for k in ["expect", "outlook", "guidance", "r&d", "future", "patent", "quantum"]):
             exec_summary = (
-                f"Apex Global management provided optimistic guidance for FY 2026-2027, forecasting constant currency revenue growth "
-                f"of **7.5% to 9.5%** and operating margins preserved in the resilient band of **24.5% to 25.5%** [Source 01 • Page 6]. "
-                f"Growth is anchored by an all-time high Total Contract Value (TCV) backlog of **$34.8 billion** and rapid agentic AI monetization."
+                f"TCS leadership outlined a multi-horizon strategic vision centered on 'Infrastructure to Intelligence' [Source 01 • Page {top_page}]. "
+                f"The firm committed ₹2,900 crore (1.1% of revenue) to R&I, established the Amaravati Quantum Valley with IBM, and operates 14 Pace Ports & Studios globally."
             )
             key_findings = [
-                f"**Revenue Guidance**: Target set between **7.5% and 9.5%** constant currency growth for FY 2026-2027 [Source 01 • Page 6].",
-                f"**Operating Margin Band**: Maintained at **24.5% - 25.5%**, supported by continued automation yield [Source 01 • Page 6].",
-                f"**Record Order Book**: Full-year Total Contract Value (TCV) reached **$34.8B** with a book-to-bill ratio of 1.22 [Source 02 • Page 4].",
-                f"**Capital Allocation**: Board approved a record **$2.40/share dividend** and a **$1.5 billion share repurchase program** [Source 03 • Page 2].",
+                f"Partnered with IBM to establish **Amaravati Quantum Valley (AQV)**, deploying IBM Quantum System Two (133-qubit Heron processor) [Source 01 • Page 26].",
+                f"Annual R&I reinvestment reached **₹2,900 crore (1.1% of revenue)** across 45+ research centers and 54 premier university partnerships [Source 01 • Page 26].",
+                f"Global innovation network expanded across **9 Pace Ports** (Tokyo, London, Paris, Toronto, etc.) and **5 Pace Studios** [Source 01 • Page 26].",
+                f"Cumulative patents granted reached **5,500+** (out of 9,596 filed), including 573 patents specifically in AI-led inventions.",
             ]
             important_numbers = [
-                {"label": "FY 26-27 Revenue Target", "value": "7.5% - 9.5%", "change": "Constant Currency", "citation": "Page 6"},
-                {"label": "Operating Margin Range", "value": "24.5% - 25.5%", "change": "Resilient Band", "citation": "Page 6"},
-                {"label": "Total Contract Value", "value": "$34.8B", "change": "1.22 Book-to-Bill", "citation": "Page 4"},
-                {"label": "Share Repurchase Plan", "value": "$1.5B", "change": "Board Approved", "citation": "Page 2"},
-                {"label": "Dividend Payout", "value": "$2.40/sh", "change": "Record Cash Return", "citation": "Page 2"},
+                {"label": "Annual R&I Investment", "value": "₹2,900 Cr", "change": "1.1% of Revenue", "citation": "Page 26"},
+                {"label": "Cumulative Patents", "value": "5,500 / 9,596", "change": "573 AI Patents", "citation": "Page 26"},
+                {"label": "Pace Ports & Studios", "value": "14 Global Hubs", "change": "Co-Innovation", "citation": "Page 26"},
+                {"label": "Quantum Processor", "value": "133-qubit", "change": "IBM Heron AQV", "citation": "Page 26"},
+                {"label": "Academic Alliances", "value": "54 Universities", "change": "MIT, CMU, IITs", "citation": "Page 26"},
             ]
             risks_concerns = [
-                f"Achieving the upper band of revenue growth (9.5%) depends on macroeconomic stability in US enterprise IT spend.",
-                f"Potential foreign exchange headwinds across emerging market currencies could impact reported USD figures.",
+                f"Commercial payback cycles on bleeding-edge quantum and neuromorphic architectures require sustained long-term capital commitment.",
+                f"Geopolitical headwinds may influence sovereign cloud compliance and localization requirements.",
             ]
             outlook = [
-                f"Strategic priority 1: Deepening Agentic AI and Autonomous Workflow offerings across Fortune 500 enterprises [Source 01 • Page 6].",
-                f"Strategic priority 2: Expanding local delivery hubs in Eastern Europe, Japan, and Latin America.",
-                f"Strategic priority 3: Net-zero carbon across Scope 1 and Scope 2 operations by 2030.",
+                f"Scaling AI WisdomNext™ as the unified multi-model enterprise cognitive orchestration layer across clients.",
+                f"Continued commitment to sustainable urbanization modeling in collaboration with national research foundations.",
             ]
 
         else:

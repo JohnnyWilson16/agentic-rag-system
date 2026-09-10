@@ -11,6 +11,17 @@ try:
 except Exception:
     pass
 
+import os
+from pathlib import Path
+
+# Ensure local crewai directory to avoid permission errors accessing ~/Library in sandboxes
+_local_crewai = Path(__file__).resolve().parent.parent.parent / ".crewai"
+_local_crewai.mkdir(parents=True, exist_ok=True)
+if "CREWAI_STORAGE_DIR" not in os.environ:
+    os.environ["CREWAI_STORAGE_DIR"] = str(_local_crewai)
+if "CREWAI_CREDENTIALS_DIR" not in os.environ:
+    os.environ["CREWAI_CREDENTIALS_DIR"] = str(_local_crewai)
+
 from agentic_rag.config import Settings, get_settings
 from agentic_rag.document_loader import DocumentLoader
 from agentic_rag.llm_factory import LLMFactory

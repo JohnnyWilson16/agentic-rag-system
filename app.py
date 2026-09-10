@@ -82,7 +82,7 @@ engine = get_engine()
 
 # Initialize Session State
 if "query" not in st.session_state:
-    st.session_state.query = "How did the company perform financially?"
+    st.session_state.query = "How did TCS perform financially and what are its operating margins?"
 if "last_result" not in st.session_state:
     st.session_state.last_result = engine.run_agentic_query(st.session_state.query)
 if "run_now" not in st.session_state:
@@ -732,20 +732,20 @@ with col_left:
     p1, p2 = st.columns(2)
     p3, p4 = st.columns(2)
     
-    if p1.button("📊 Financial Performance", key="btn_p1", help="How did the company perform financially?"):
-        st.session_state.query = "How did the company perform financially?"
+    if p1.button("📊 Financial & Margins", key="btn_p1", help="How did TCS perform financially and what are its operating margins?"):
+        st.session_state.query = "How did TCS perform financially and what are its operating margins?"
         st.session_state.run_now = True
         
-    if p2.button("⚠️ Risk Factors & Threats", key="btn_p2", help="What are the biggest risks mentioned in the report?"):
-        st.session_state.query = "What are the biggest risks mentioned in the report?"
+    if p2.button("🤖 Enterprise AI ($2.3B)", key="btn_p2", help="What are TCS's AI revenue, GenAI capabilities, and AI WisdomNext metrics?"):
+        st.session_state.query = "What are TCS's AI revenue, GenAI capabilities, and AI WisdomNext metrics?"
         st.session_state.run_now = True
         
-    if p3.button("📈 Revenue by Business Area", key="btn_p3", help="Compare revenue growth across major business areas."):
-        st.session_state.query = "Compare revenue growth across major business areas."
+    if p3.button("👥 Workforce & Attrition", key="btn_p3", help="What is TCS's total employee headcount, hiring, and attrition rate?"):
+        st.session_state.query = "What is TCS's total employee headcount, hiring, and attrition rate?"
         st.session_state.run_now = True
         
-    if p4.button("🔮 Management Outlook", key="btn_p4", help="What does management expect going forward?"):
-        st.session_state.query = "What does management expect going forward?"
+    if p4.button("🔮 Innovation & Outlook", key="btn_p4", help="What are TCS's key R&D investments, patents, and strategic outlook?"):
+        st.session_state.query = "What are TCS's key R&D investments, patents, and strategic outlook?"
         st.session_state.run_now = True
 
     # User Query Input
@@ -763,11 +763,11 @@ with col_left:
 
     # Document & Retriever Metadata Tags
     render_html(
-        """
+        f"""
         <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
-            <span class="tech-badge">📄 Document: Annual Report 2025-2026</span>
-            <span class="tech-badge cyan">💾 Knowledge Base: ChromaDB</span>
-            <span class="tech-badge">🔍 Retriever: Top 3 Chunks</span>
+            <span class="tech-badge">📄 Document: TCS Integrated Annual Report 2025-2026</span>
+            <span class="tech-badge cyan">💾 Knowledge Base: ChromaDB ({status_meta['indexed_vectors']} Chunks)</span>
+            <span class="tech-badge">🔍 Retriever: Top {status_meta['retriever_k']} Chunks ({status_meta['page_count']} Pages)</span>
         </div>
         """
     )
