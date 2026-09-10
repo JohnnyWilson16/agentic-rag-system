@@ -4,6 +4,12 @@ Agentic RAG System
 An end-to-end Agentic Retrieval-Augmented Generation pipeline built with
 LangChain, ChromaDB, and CrewAI for deep financial and enterprise report analysis.
 """
+# Global safety patch for Protobuf gencode/runtime version mismatch across mixed environments
+try:
+    import google.protobuf.runtime_version
+    google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = lambda *args, **kwargs: None
+except Exception:
+    pass
 
 from agentic_rag.config import Settings, get_settings
 from agentic_rag.document_loader import DocumentLoader

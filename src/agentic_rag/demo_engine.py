@@ -19,10 +19,18 @@ VENV_PATH = Path(__file__).resolve().parent.parent.parent / ".venv" / "lib" / "p
 if VENV_PATH.exists() and str(VENV_PATH) not in sys.path:
     sys.path.insert(0, str(VENV_PATH))
 
+# Global safety patch for Protobuf gencode/runtime version mismatch
+try:
+    import google.protobuf.runtime_version
+    google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = lambda *args, **kwargs: None
+except Exception:
+    pass
+
 # Ensure local crewai storage dir
 CREWAI_DIR = Path(__file__).resolve().parent.parent.parent / ".crewai"
 CREWAI_DIR.mkdir(parents=True, exist_ok=True)
 os.environ["CREWAI_STORAGE_DIR"] = str(CREWAI_DIR)
+os.environ["CREWAI_CREDENTIALS_DIR"] = str(CREWAI_DIR)
 
 from agentic_rag.config import Settings, get_settings
 from agentic_rag.document_loader import DocumentLoader

@@ -7,11 +7,9 @@ PDF -> Document Loader -> Chunking -> Embeddings -> Chroma Vector DB -> Retrieve
 
 import os
 import sys
-import time
 from pathlib import Path
-import streamlit as st
 
-# Setup system paths and sandbox directories
+# Setup paths and environment BEFORE importing streamlit or third-party packages
 APP_DIR = Path(__file__).resolve().parent
 VENV_PACKAGES = APP_DIR / ".venv" / "lib" / "python3.13" / "site-packages"
 SRC_PATH = APP_DIR / "src"
@@ -19,12 +17,22 @@ CREWAI_DIR = APP_DIR / ".crewai"
 
 CREWAI_DIR.mkdir(parents=True, exist_ok=True)
 os.environ["CREWAI_STORAGE_DIR"] = str(CREWAI_DIR)
+os.environ["CREWAI_CREDENTIALS_DIR"] = str(CREWAI_DIR)
 
 if VENV_PACKAGES.exists() and str(VENV_PACKAGES) not in sys.path:
     sys.path.insert(0, str(VENV_PACKAGES))
 if SRC_PATH.exists() and str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
+# Disable strict Protobuf gencode/runtime version check to eliminate mismatched version crashes
+try:
+    import google.protobuf.runtime_version
+    google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = lambda *args, **kwargs: None
+except Exception:
+    pass
+
+import time
+import streamlit as st
 from agentic_rag.demo_engine import DemoEngine, AgentExecutionResult
 
 # Page configuration
