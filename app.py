@@ -6,6 +6,7 @@ PDF -> Document Loader -> Chunking -> Embeddings -> Chroma Vector DB -> Retrieve
 """
 
 import os
+import re
 import sys
 import time
 import textwrap
@@ -44,12 +45,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-def render_html(html_str: str):
+def render_html(html_str: str, target=None):
     """
-    Renders dedented HTML cleanly in Streamlit without triggering
+    Renders pure HTML cleanly in Streamlit without triggering
     Markdown's 4-space code block formatting.
+    Removes leading whitespace from each line so that no Markdown parser
+    ever interprets indented tags as <pre><code> blocks.
     """
-    st.markdown(textwrap.dedent(html_str).strip(), unsafe_allow_html=True)
+    if target is None:
+        target = st
+    clean_lines = [line.lstrip() for line in html_str.splitlines()]
+    clean = "\n".join(clean_lines).strip()
+    if hasattr(target, "html"):
+        target.html(clean)
+    else:
+        target.markdown(clean, unsafe_allow_html=True)
+
+def format_html_text(text: str) -> str:
+    """Converts markdown formatting (bold, citations) into native styled HTML."""
+    text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(
+        r"\[(Source \d+.*?Page \d+)\]",
+        r'<span style="background: rgba(56, 189, 248, 0.15); color: #7DD3FC; padding: 2px 7px; border-radius: 4px; font-family: \'JetBrains Mono\', monospace; font-size: 0.74rem; border: 1px solid rgba(56, 189, 248, 0.3);">\1</span>',
+        text,
+    )
+    return text
+
 
 
 # Initialize Demo Engine
@@ -813,7 +834,7 @@ with col_right:
                     </div>"""
                 )
             full_active_html = f'<div class="timeline-container">{"".join(active_cards)}</div>'
-            timeline_placeholder.markdown(textwrap.dedent(full_active_html).strip(), unsafe_allow_html=True)
+            render_html(full_active_html, target=timeline_placeholder)
             time.sleep(0.12)
 
         st.session_state.last_result = engine.run_agentic_query(st.session_state.query)
@@ -853,7 +874,7 @@ with col_right:
 # ==============================================================================
 # 4. FINAL ANSWER AREA (COMPLETE SELF-CONTAINED HTML CARD)
 # ==============================================================================
-st.markdown("<br>", unsafe_allow_html=True)
+render_html("<br>")
 
 # Build metric cards
 metric_cards_html = []
@@ -870,10 +891,11 @@ for num in res.important_numbers:
     )
 metrics_grid_html = "".join(metric_cards_html)
 
-# Build list items
-kf_items_html = "".join([f'<li style="margin-bottom: 8px; color: #CBD5E1;">{kf}</li>' for kf in res.key_findings])
-risks_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{rk}</li>' for rk in res.risks_concerns])
-outlook_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{ot}</li>' for ot in res.outlook])
+# Build formatted list items
+kf_items_html = "".join([f'<li style="margin-bottom: 8px; color: #CBD5E1;">{format_html_text(kf)}</li>' for kf in res.key_findings])
+risks_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{format_html_text(rk)}</li>' for rk in res.risks_concerns])
+outlook_items_html = "".join([f'<li style="margin-bottom: 6px; color: #CBD5E1;">{format_html_text(ot)}</li>' for ot in res.outlook])
+formatted_exec_summary = format_html_text(res.executive_summary)
 
 # Render the entire answer area as one cohesive, cleanly rendered card
 full_answer_card_html = f"""
@@ -889,7 +911,7 @@ full_answer_card_html = f"""
 
     <div class="section-label">Executive Summary</div>
     <div class="exec-summary-text">
-        {res.executive_summary}
+        {formatted_exec_summary}
     </div>
 
     <div class="section-label">Important Numbers</div>
@@ -918,6 +940,7 @@ full_answer_card_html = f"""
     </div>
 </div>
 """
+
 
 render_html(full_answer_card_html)
 
