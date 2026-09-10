@@ -21,6 +21,7 @@ I built this project to transition from static retrieval to **Agentic RAG**. Ins
 - **Local Zero-Cost Embeddings**: Generates semantic embeddings locally using `sentence-transformers/all-MiniLM-L6-v2` stored in a persistent ChromaDB database.
 - **Autonomous Tool-Driven Retrieval**: Exposes vector similarity search as a callable tool for an autonomous agent.
 - **Evidence-Grounded Synthesis**: Enforces strict grounding rules where the agent cites exact numbers, metrics, and document pages rather than relying on pre-trained assumptions.
+- **Production-Style Streamlit AI Console**: An enterprise dark-themed intelligence workspace with live agent reasoning timelines, decision highlights, structured 5-section reports, expandable evidence citations, and architecture breakdowns.
 - **Flexible LLM Provider Support**: Replaces hard dependencies on local Ollama daemons with a unified provider layer supporting Groq (free, ultra-fast cloud inference for Llama 3 models), OpenAI, Google Gemini, Anthropic Claude, and local Ollama.
 
 ---
@@ -103,6 +104,27 @@ Based on the company's annual report, here is the verified performance summary:
 2. **Digital & Cloud Transformation**: Rose **18.5% YoY**, now accounting for 42% of consolidated revenues.
 3. **BFSI (Banking & Financial Services)**: Grew **6.8% YoY** to $8.95 billion.
 ```
+
+### 3. Launching the Enterprise AI Console (Streamlit Demo)
+Launch the interactive web console with custom dark AI workspace theme:
+```bash
+./run_demo.sh
+```
+Or directly via Streamlit:
+```bash
+streamlit run app.py
+```
+
+#### What the UI Displays:
+1. **Hero Header**: Live system status (`● LOCAL AI SYSTEM ONLINE`), badges for CrewAI, ChromaDB, Sentence-Transformers, and Ollama.
+2. **Interactive Two-Column Console**:
+   - **Left**: Query input with 4 one-click prompt chips, document metadata, and custom PDF ingestion accordion.
+   - **Right**: Real-time 6-stage agent reasoning timeline and high-visibility decision badge (*"Agent decided to use Financial Report Search"*).
+3. **Structured Final Answer**: Executive Summary, Key Findings, Important Numbers grid, Risks/Concerns, and Forward Outlook.
+4. **Evidence Panel ("Why I Believe This")**: Expandable source chunks with cosine relevance scores and page citations.
+5. **System Architecture**: Horizontal end-to-end component flow with 1-line explanations.
+6. **Traditional RAG vs Agentic RAG**: Side-by-side architectural comparison.
+
 
 ---
 
