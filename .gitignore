@@ -37,12 +37,11 @@ env/
 *.pem
 *.key
 
-# Vector DB & Local Storage
-company_db/
+# Vector DB & Local Storage (company_db included for zero-cold-start cloud deployment)
+!company_db
+!company_db/**
 chroma_db/
 storage/
-*.sqlite3
-*.db
 
 # Testing & Coverage
 .pytest_cache/

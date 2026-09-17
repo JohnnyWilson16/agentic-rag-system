@@ -27,10 +27,15 @@ except Exception:
     pass
 
 # Ensure local crewai storage dir
-CREWAI_DIR = Path(__file__).resolve().parent.parent.parent / ".crewai"
-CREWAI_DIR.mkdir(parents=True, exist_ok=True)
-os.environ["CREWAI_STORAGE_DIR"] = str(CREWAI_DIR)
-os.environ["CREWAI_CREDENTIALS_DIR"] = str(CREWAI_DIR)
+crewai_storage = os.getenv("CREWAI_STORAGE_DIR")
+if not crewai_storage:
+    CREWAI_DIR = Path(__file__).resolve().parent.parent.parent / ".crewai"
+    CREWAI_DIR.mkdir(parents=True, exist_ok=True)
+    os.environ["CREWAI_STORAGE_DIR"] = str(CREWAI_DIR)
+    os.environ["CREWAI_CREDENTIALS_DIR"] = str(CREWAI_DIR)
+else:
+    Path(crewai_storage).mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("CREWAI_CREDENTIALS_DIR", crewai_storage)
 
 from agentic_rag.config import Settings, get_settings
 from agentic_rag.document_loader import DocumentLoader

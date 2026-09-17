@@ -15,12 +15,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# Ensure local crewai directory and venv packages are resolved
+# Ensure local crewai directory is created
 APP_DIR = Path(__file__).resolve().parent.parent.parent
-CREWAI_DIR = APP_DIR / ".crewai"
-CREWAI_DIR.mkdir(parents=True, exist_ok=True)
-os.environ.setdefault("CREWAI_STORAGE_DIR", str(CREWAI_DIR))
-os.environ.setdefault("CREWAI_CREDENTIALS_DIR", str(CREWAI_DIR))
+crewai_storage = os.getenv("CREWAI_STORAGE_DIR")
+if crewai_storage:
+    Path(crewai_storage).mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("CREWAI_CREDENTIALS_DIR", crewai_storage)
+else:
+    CREWAI_DIR = APP_DIR / ".crewai"
+    CREWAI_DIR.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("CREWAI_STORAGE_DIR", str(CREWAI_DIR))
+    os.environ.setdefault("CREWAI_CREDENTIALS_DIR", str(CREWAI_DIR))
 
 # Protobuf safety patch
 try:
@@ -431,5 +436,7 @@ if STATIC_DIR.exists():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", "8000"))
-    uvicorn.run("agentic_rag.api:app", host="0.0.0.0", port=port, reload=True)
+    port = int(os.getenv("PORT", "10000"))
+    reload_enabled = os.getenv("ENVIRONMENT", "production").lower() == "development"
+    print(f"Starting Agentic RAG API on 0.0.0.0:{port} (reload={reload_enabled})")
+    uvicorn.run("agentic_rag.api:app", host="0.0.0.0", port=port, reload=reload_enabled)
