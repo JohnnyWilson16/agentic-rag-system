@@ -67,7 +67,7 @@ app.add_middleware(
 # Core Engines
 settings: Settings = get_settings()
 engine: DemoEngine = DemoEngine(settings=settings)
-vector_store_manager: VectorStoreManager = VectorStoreManager(settings=settings)
+vector_store_manager: VectorStoreManager = engine.vector_store_manager
 
 # In-Memory Conversation Storage
 conversations_db: Dict[str, Dict[str, Any]] = {}

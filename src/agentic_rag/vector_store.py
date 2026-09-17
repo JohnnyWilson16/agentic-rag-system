@@ -31,15 +31,28 @@ class VectorStoreManager:
         self.settings = settings or get_settings()
         self.collection_name = collection_name
         self.persist_directory = str(Path(self.settings.vector_store_dir).resolve())
-
-        # Initialize local HuggingFace embedding model (runs 100% locally, no API keys)
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name=self.settings.embedding_model,
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},
-        )
-
+        self._embeddings: Optional[HuggingFaceEmbeddings] = None
         self._vector_store: Optional[Chroma] = None
+
+    @property
+    def embeddings(self) -> HuggingFaceEmbeddings:
+        """Lazily initializes the local HuggingFace embedding model with memory optimizations."""
+        if self._embeddings is None:
+            try:
+                import torch
+                torch.set_num_threads(1)
+                try:
+                    torch.set_num_interop_threads(1)
+                except Exception:
+                    pass
+            except Exception:
+                pass
+            self._embeddings = HuggingFaceEmbeddings(
+                model_name=self.settings.embedding_model,
+                model_kwargs={"device": "cpu"},
+                encode_kwargs={"normalize_embeddings": True},
+            )
+        return self._embeddings
 
     @property
     def vector_store(self) -> Chroma:
@@ -128,6 +141,20 @@ class VectorStoreManager:
 
     def get_document_count(self) -> int:
         """Returns the number of indexed records in the vector database."""
+        # Fast path: query sqlite directly to avoid loading heavyweight embedding model into memory
+        db_path = Path(self.persist_directory) / "chroma.sqlite3"
+        if db_path.is_file():
+            try:
+                import sqlite3
+                with sqlite3.connect(str(db_path)) as conn:
+                    cur = conn.cursor()
+                    cur.execute("SELECT count(*) FROM embeddings;")
+                    row = cur.fetchone()
+                    if row:
+                        return int(row[0])
+            except Exception:
+                pass
+
         try:
             return self.vector_store._collection.count()
         except Exception:
