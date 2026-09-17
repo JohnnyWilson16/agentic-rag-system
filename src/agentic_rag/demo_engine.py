@@ -223,9 +223,9 @@ class DemoEngine:
         # -------------------------------------------------------------
         t_retrieval_start = time.perf_counter()
         
-        # Execute real Chroma similarity search
+        # Execute similarity search (ONNX vector retrieval with SQLite FTS fallback)
         k = self.settings.retriever_k
-        raw_results = self.vector_store_manager.vector_store.similarity_search_with_score(
+        raw_results = self.vector_store_manager.similarity_search_with_score(
             query=tool_query,
             k=k,
         )

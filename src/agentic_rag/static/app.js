@@ -638,8 +638,12 @@
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Server error' }));
-        throw new Error(errorData.detail || `Server error (${response.status})`);
+        let errDetail = `Server returned status ${response.status} (${response.statusText || 'Error'})`;
+        try {
+          const errorData = await response.json();
+          if (errorData.detail) errDetail = errorData.detail;
+        } catch (_) {}
+        throw new Error(errDetail);
       }
 
       const result = await response.json();
@@ -820,6 +824,11 @@
 
   // File Upload Drag & Drop
   const dropzone = elements.dropzone;
+  dropzone.addEventListener('click', (e) => {
+    if (e.target !== elements.fileInput && !e.target.closest('label')) {
+      elements.fileInput.click();
+    }
+  });
   dropzone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropzone.classList.add('dragover');
@@ -854,11 +863,16 @@
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+      }
       if (res.ok) {
-        elements.uploadStatusText.textContent = `✓ Successfully indexed '${file.name}' (${data.chunks_created} chunks added).`;
+        elements.uploadStatusText.textContent = `✓ Successfully indexed '${file.name}' (${data.chunks_created} chunks added, total vectors: ${data.total_vectors}).`;
         fetchSystemStatus();
-        openKnowledgeModal(); // refresh table
+        fetchDocuments();
       } else {
         elements.uploadStatusText.textContent = `Upload failed: ${data.detail || 'Server error'}`;
       }
