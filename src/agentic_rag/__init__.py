@@ -22,13 +22,6 @@ if "CREWAI_STORAGE_DIR" not in os.environ:
 if "CREWAI_CREDENTIALS_DIR" not in os.environ:
     os.environ["CREWAI_CREDENTIALS_DIR"] = str(_local_crewai)
 
-from agentic_rag.config import Settings, get_settings
-from agentic_rag.document_loader import DocumentLoader
-from agentic_rag.llm_factory import LLMFactory
-from agentic_rag.pipeline import AgenticRAGPipeline
-from agentic_rag.text_splitter import DocumentSplitter
-from agentic_rag.vector_store import VectorStoreManager
-
 __version__ = "0.1.0"
 __all__ = [
     "AgenticRAGPipeline",
@@ -39,3 +32,24 @@ __all__ = [
     "VectorStoreManager",
     "LLMFactory",
 ]
+
+def __getattr__(name: str):
+    if name == "AgenticRAGPipeline":
+        from agentic_rag.pipeline import AgenticRAGPipeline
+        return AgenticRAGPipeline
+    elif name in ("Settings", "get_settings"):
+        from agentic_rag import config
+        return getattr(config, name)
+    elif name == "DocumentLoader":
+        from agentic_rag.document_loader import DocumentLoader
+        return DocumentLoader
+    elif name == "DocumentSplitter":
+        from agentic_rag.text_splitter import DocumentSplitter
+        return DocumentSplitter
+    elif name == "VectorStoreManager":
+        from agentic_rag.vector_store import VectorStoreManager
+        return VectorStoreManager
+    elif name == "LLMFactory":
+        from agentic_rag.llm_factory import LLMFactory
+        return LLMFactory
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

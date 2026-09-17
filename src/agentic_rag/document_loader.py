@@ -7,7 +7,6 @@ Handles loading, text extraction, and metadata enrichment for enterprise PDF, Ma
 from pathlib import Path
 from typing import List
 from langchain_core.documents import Document
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
 
 
 class DocumentLoader:
@@ -39,9 +38,11 @@ class DocumentLoader:
         ext = path.suffix.lower()
 
         if ext == ".pdf":
+            from langchain_community.document_loaders import PyPDFLoader
             loader = PyPDFLoader(str(path))
             documents = loader.load()
         elif ext in [".txt", ".md", ".markdown", ".csv", ".json"]:
+            from langchain_community.document_loaders import TextLoader
             loader = TextLoader(str(path), encoding="utf-8")
             documents = loader.load()
         else:

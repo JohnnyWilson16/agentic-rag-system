@@ -4,11 +4,10 @@ Vector Store Management Module
 Manages local embedding generation using Sentence-Transformers and persistent storage in ChromaDB.
 """
 
+from __future__ import annotations
 from pathlib import Path
 from typing import Any, List, Optional
 from langchain_core.documents import Document
-from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 
 from agentic_rag.config import Settings, get_settings
 
@@ -35,7 +34,7 @@ class VectorStoreManager:
         self._vector_store: Optional[Chroma] = None
 
     @property
-    def embeddings(self) -> HuggingFaceEmbeddings:
+    def embeddings(self) -> Any:
         """Lazily initializes the local HuggingFace embedding model with memory optimizations."""
         if self._embeddings is None:
             try:
@@ -47,6 +46,7 @@ class VectorStoreManager:
                     pass
             except Exception:
                 pass
+            from langchain_huggingface import HuggingFaceEmbeddings
             self._embeddings = HuggingFaceEmbeddings(
                 model_name=self.settings.embedding_model,
                 model_kwargs={"device": "cpu"},
@@ -55,9 +55,10 @@ class VectorStoreManager:
         return self._embeddings
 
     @property
-    def vector_store(self) -> Chroma:
+    def vector_store(self) -> Any:
         """Lazily initializes or connects to the persisted Chroma collection."""
         if self._vector_store is None:
+            from langchain_chroma import Chroma
             self._vector_store = Chroma(
                 collection_name=self.collection_name,
                 embedding_function=self.embeddings,
@@ -69,7 +70,7 @@ class VectorStoreManager:
         self,
         chunks: List[Document],
         reset_existing: bool = False,
-    ) -> Chroma:
+    ) -> Any:
         """
         Embeds and stores document chunks in ChromaDB.
 
@@ -88,6 +89,7 @@ class VectorStoreManager:
         if reset_existing:
             self.reset_collection()
 
+        from langchain_chroma import Chroma
         self._vector_store = Chroma.from_documents(
             documents=chunks,
             embedding=self.embeddings,

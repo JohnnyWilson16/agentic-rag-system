@@ -4,9 +4,8 @@ Text Chunking and Splitting Module
 Splits long documents into semantically coherent, context-preserving chunks with metadata enrichment.
 """
 
-from typing import List
+from typing import List, Any
 from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 class DocumentSplitter:
@@ -29,14 +28,20 @@ class DocumentSplitter:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.separators = separators or ["\n\n", "\n", ". ", " ", ""]
+        self._splitter_instance: Any = None
 
-        self._splitter = RecursiveCharacterTextSplitter(
-            chunk_size=self.chunk_size,
-            chunk_overlap=self.chunk_overlap,
-            separators=self.separators,
-            length_function=len,
-            is_separator_regex=False,
-        )
+    @property
+    def splitter(self) -> Any:
+        if self._splitter_instance is None:
+            from langchain_text_splitters import RecursiveCharacterTextSplitter
+            self._splitter_instance = RecursiveCharacterTextSplitter(
+                chunk_size=self.chunk_size,
+                chunk_overlap=self.chunk_overlap,
+                separators=self.separators,
+                length_function=len,
+                is_separator_regex=False,
+            )
+        return self._splitter_instance
 
     def split_documents(self, documents: List[Document]) -> List[Document]:
         """
@@ -51,7 +56,7 @@ class DocumentSplitter:
         if not documents:
             return []
 
-        chunks = self._splitter.split_documents(documents)
+        chunks = self.splitter.split_documents(documents)
 
         # Enrich chunk metadata for citation and evidence tracking
         enriched_chunks: List[Document] = []
