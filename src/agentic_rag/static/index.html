@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG — Enterprise Financial Intelligence</title>
+  <meta name="description" content="Production-grade Agentic Retrieval-Augmented Generation workspace for deep financial and corporate report analysis.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366F1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-container" id="app">
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Workspace Navigation">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <span class="brand-name">Agentic RAG</span>
+            <span class="brand-tag">Enterprise Console</span>
+          </div>
+        </div>
+        <button class="icon-btn close-sidebar-btn" id="closeSidebarBtn" title="Close sidebar" aria-label="Close sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Action Button -->
+      <div class="sidebar-actions">
+        <button class="btn btn-primary new-chat-btn" id="newChatBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>New Analysis</span>
+          <kbd class="shortcut-hint">⌘K</kbd>
+        </button>
+      </div>
+
+      <!-- Navigation Section -->
+      <nav class="sidebar-nav">
+        <div class="nav-group-title">WORKSPACE VIEWS</div>
+        <button class="nav-item active" id="viewChatBtn" data-view="chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Analysis Workspace</span>
+        </button>
+        <button class="nav-item" id="openKnowledgeModalBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span>Knowledge & Documents</span>
+          <span class="badge badge-subtle" id="sidebarDocBadge">1,818 Chunks</span>
+        </button>
+        <button class="nav-item" id="openArchModalBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>System Diagnostics</span>
+        </button>
+      </nav>
+
+      <!-- History Section -->
+      <div class="sidebar-history">
+        <div class="history-header">
+          <span class="nav-group-title">RECENT ANALYSES</span>
+          <button class="clear-history-btn" id="clearAllChatsBtn" title="Clear all sessions">Clear</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- System Status Footer -->
+      <div class="sidebar-footer">
+        <div class="system-health-card">
+          <div class="health-indicator">
+            <span class="status-pulse" id="statusPulse"></span>
+            <span class="health-text" id="statusText">Vector Store Online</span>
+          </div>
+          <div class="health-meta">
+            <span id="sidebarDbInfo">ChromaDB • 1,818 Chunks</span>
+            <span class="badge badge-emerald" id="healthBadge">Verified</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="main-workspace" id="mainWorkspace" role="main">
+      <!-- Top Workspace Navbar -->
+      <header class="workspace-header">
+        <div class="header-left">
+          <button class="icon-btn mobile-sidebar-toggle" id="sidebarToggleBtn" aria-label="Toggle navigation sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="session-info">
+            <h1 class="session-title" id="currentSessionTitle">Tata Consultancy Services (TCS) FY 2025-2026 Analysis</h1>
+            <div class="session-badges">
+              <span class="badge badge-indigo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                TCS Integrated Annual Report
+              </span>
+              <span class="badge badge-subtle" id="topNavVectorCount">1,818 Vectors</span>
+              <span class="badge badge-emerald">Strict Grounding</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="btn btn-secondary drawer-toggle-btn" id="drawerToggleBtn" aria-label="Toggle Evidence Drawer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <span>Evidence Drawer</span>
+            <span class="badge badge-cyan" id="drawerCountBadge">0 Sources</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Central Chat Thread Container -->
+      <section class="chat-thread" id="chatThread" aria-live="polite">
+        <!-- Empty State Welcome Screen (shown initially) -->
+        <div class="welcome-screen" id="welcomeScreen">
+          <div class="welcome-badge">
+            <span class="badge badge-indigo">Autonomous Agentic Reasoning</span>
+          </div>
+          <h2 class="welcome-title">Enterprise Financial Intelligence</h2>
+          <p class="welcome-subtitle">
+            Perform deep multi-dimensional analysis on complex corporate disclosures. The autonomous agent reviews questions, formulates targeted vector lookups in ChromaDB, inspects retrieved page evidence, and synthesizes structured reports with verifiable citations.
+          </p>
+
+          <!-- Starter Prompt Chips -->
+          <div class="starter-grid">
+            <div class="starter-card" data-prompt="What was TCS's total revenue, operating margin, and RoE for FY 2025-2026?">
+              <div class="starter-icon indigo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <div class="starter-text">
+                <h3>Financial Performance & Margins</h3>
+                <p>Operating margins (24.3%), Return on Equity (51.4%), and shareholder value distributions.</p>
+              </div>
+              <span class="starter-arrow">→</span>
+            </div>
+
+            <div class="starter-card" data-prompt="How is TCS scaling its enterprise AI capabilities, GenAI revenue, and IP platforms?">
+              <div class="starter-icon cyan">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <div class="starter-text">
+                <h3>Enterprise AI & WisdomNext™</h3>
+                <p>$2.3B annualized AI revenue, 270K certified associates, and 1,833 AI patent filings.</p>
+              </div>
+              <span class="starter-arrow">→</span>
+            </div>
+
+            <div class="starter-card" data-prompt="What are the key workforce statistics, fresher hiring volume, and voluntary attrition rates?">
+              <div class="starter-icon emerald">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div class="starter-text">
+                <h3>Workforce & Talent Metrics</h3>
+                <p>584,519 global headcount, 13.7% attrition rate, and 44,000+ campus hires.</p>
+              </div>
+              <span class="starter-arrow">→</span>
+            </div>
+
+            <div class="starter-card" data-prompt="What are management's key strategic priorities for Amaravati Quantum Valley and R&I investment?">
+              <div class="starter-icon amber">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              </div>
+              <div class="starter-text">
+                <h3>Strategic Outlook & Quantum Valley</h3>
+                <p>₹2,900 Cr R&I reinvestment, IBM Quantum System Two collaboration, and 5,500 patents.</p>
+              </div>
+              <span class="starter-arrow">→</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages stream populated via JS -->
+        <div class="messages-container" id="messagesContainer"></div>
+
+        <!-- Loading / Progress indicator -->
+        <div class="progress-indicator" id="progressIndicator" style="display: none;">
+          <div class="progress-card">
+            <div class="progress-top">
+              <div class="progress-spinner">
+                <svg class="spin-svg" viewBox="0 0 50 50">
+                  <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+                </svg>
+              </div>
+              <div class="progress-labels">
+                <span class="progress-title" id="progressTitle">Agent Reasoning Active</span>
+                <span class="progress-desc" id="progressDesc">Querying ChromaDB vector index with semantic search...</span>
+              </div>
+            </div>
+            <div class="skeleton-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Error State Banner -->
+        <div class="error-banner" id="errorBanner" style="display: none;">
+          <div class="error-content">
+            <div class="error-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div class="error-details">
+              <h4 class="error-title">Analysis Execution Interrupted</h4>
+              <p class="error-message" id="errorMessage">Unable to communicate with the vector pipeline.</p>
+            </div>
+          </div>
+          <div class="error-actions">
+            <button class="btn btn-outline-danger" id="retryQueryBtn">Try Again</button>
+            <button class="icon-btn" id="dismissErrorBtn" title="Dismiss">✕</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Input Bar Section -->
+      <footer class="workspace-footer">
+        <form class="query-form" id="queryForm">
+          <div class="input-card">
+            <div class="input-prefix">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            </div>
+            <textarea
+              class="query-input"
+              id="queryInput"
+              rows="1"
+              placeholder="Ask anything about TCS FY 2025-2026 financial metrics, segments, or outlook..."
+              aria-label="Analytical query input"
+            ></textarea>
+            <div class="input-actions">
+              <span class="char-hint" id="charHint">Enter ↵ to submit</span>
+              <button type="submit" class="btn btn-send" id="sendBtn" title="Run Agentic Analysis">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="footer-caption">
+          <span>Enterprise Agentic RAG • ChromaDB Persistence • Grounded in Verified Citations • Zero Hallucination Policy</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Right Evidence Drawer (Slide-Over) -->
+    <aside class="evidence-drawer" id="evidenceDrawer" aria-label="Retrieved Evidence Details" aria-hidden="true">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <div class="drawer-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          </div>
+          <div>
+            <h2 class="drawer-title">Retrieved Evidence</h2>
+            <p class="drawer-subtitle" id="drawerSubtitle">Vector search evidence chunks grounding the current report.</p>
+          </div>
+        </div>
+        <button class="icon-btn close-drawer-btn" id="closeDrawerBtn" aria-label="Close evidence drawer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Drawer Search / Filter -->
+      <div class="drawer-filter">
+        <input type="text" class="drawer-search-input" id="drawerSearchInput" placeholder="Filter retrieved source chunks...">
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="drawer-content" id="drawerContent">
+        <!-- Empty Evidence Placeholder -->
+        <div class="drawer-empty" id="drawerEmptyPlaceholder">
+          <div class="drawer-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.8"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <h4>No Evidence Loaded</h4>
+          <p>Run a query or click on any citation pill (e.g. <code>[Source 01]</code>) in the response to inspect the exact retrieved text chunks.</p>
+        </div>
+
+        <!-- Evidence Cards Container -->
+        <div class="source-cards-list" id="sourceCardsList"></div>
+      </div>
+    </aside>
+
+    <!-- Overlay backdrop for mobile drawer -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  </div>
+
+  <!-- Knowledge & Ingestion Modal -->
+  <div class="modal-backdrop" id="knowledgeModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 class="modal-title">Knowledge Base & Ingested Documents</h3>
+          <p class="modal-subtitle">Directly manage documents indexed into ChromaDB persistent storage.</p>
+        </div>
+        <button class="icon-btn modal-close-btn" id="closeKnowledgeModalBtn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Current Ingestion Stats -->
+        <div class="stats-overview-grid">
+          <div class="stat-card">
+            <span class="stat-label">Core Document</span>
+            <span class="stat-value">TCS Annual Report</span>
+            <span class="stat-sub">360 Pages • FY 2025-2026</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Indexed Vectors</span>
+            <span class="stat-value" id="modalVectorCount">1,818</span>
+            <span class="stat-sub">ChromaDB Collection</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Embedding Model</span>
+            <span class="stat-value text-mono">all-MiniLM-L6</span>
+            <span class="stat-sub">384 Dimensions (CPU)</span>
+          </div>
+        </div>
+
+        <!-- Documents Table -->
+        <div class="documents-table-wrapper">
+          <table class="documents-table">
+            <thead>
+              <tr>
+                <th>Document Name</th>
+                <th>Type</th>
+                <th>Pages</th>
+                <th>File Size</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="documentsTableBody">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-section">
+          <h4 class="upload-title">Ingest Custom Report</h4>
+          <div class="dropzone" id="dropzone">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <p>Drag and drop a <strong>.pdf</strong> or <strong>.txt</strong> file, or <label class="browse-link" for="fileInput">browse</label></p>
+            <span class="dropzone-hint">Preserves page boundaries and splits into 800-char semantic chunks</span>
+            <input type="file" id="fileInput" accept=".pdf,.txt,.md" style="display: none;">
+          </div>
+          <div class="upload-progress" id="uploadProgress" style="display: none;">
+            <span id="uploadStatusText">Indexing document into ChromaDB...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeKnowledgeFooterBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Diagnostics Modal -->
+  <div class="modal-backdrop" id="archModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 class="modal-title">System Architecture & Telemetry</h3>
+          <p class="modal-subtitle">Operational parameters of the autonomous Agentic RAG pipeline.</p>
+        </div>
+        <button class="icon-btn modal-close-btn" id="closeArchModalBtn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Architecture Diagram Flow -->
+        <div class="arch-flow">
+          <div class="arch-step">
+            <span class="arch-step-num">01</span>
+            <h4>Document Ingestion</h4>
+            <p>PyPDF & TextLoader load filings with page numbers.</p>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <span class="arch-step-num">02</span>
+            <h4>Recursive Splitting</h4>
+            <p>800 char chunks with 150 char overlap.</p>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <span class="arch-step-num">03</span>
+            <h4>ChromaDB Vectors</h4>
+            <p>MiniLM-L6 embeddings stored in local Chroma.</p>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <span class="arch-step-num">04</span>
+            <h4>CrewAI Agent Tool</h4>
+            <p>Dynamic tool call routes search to top-k vectors.</p>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <span class="arch-step-num">05</span>
+            <h4>Evidence Synthesis</h4>
+            <p>5-section report strictly grounded in citations.</p>
+          </div>
+        </div>
+
+        <!-- Telemetry Details -->
+        <div class="telemetry-table">
+          <div class="telemetry-row">
+            <span class="telemetry-key">Retriever Mode</span>
+            <span class="telemetry-val">Dense Cosine Similarity ($k = 3$)</span>
+          </div>
+          <div class="telemetry-row">
+            <span class="telemetry-key">Embedding Vector Dimensions</span>
+            <span class="telemetry-val">384-dimensional dense vectors</span>
+          </div>
+          <div class="telemetry-row">
+            <span class="telemetry-key">Agent Framework</span>
+            <span class="telemetry-val">CrewAI with Custom Search Tool</span>
+          </div>
+          <div class="telemetry-row">
+            <span class="telemetry-key">Storage Directory</span>
+            <span class="telemetry-val text-mono" id="diagStorageDir">./company_db</span>
+          </div>
+          <div class="telemetry-row">
+            <span class="telemetry-key">Active Provider</span>
+            <span class="telemetry-val" id="diagProvider">Groq (Llama-3.3-70b-versatile) / Local Ollama</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="closeArchFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

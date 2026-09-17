@@ -21,7 +21,7 @@ I built this project to transition from static retrieval to **Agentic RAG**. Ins
 - **Local Zero-Cost Embeddings**: Generates semantic embeddings locally using `sentence-transformers/all-MiniLM-L6-v2` stored in a persistent ChromaDB database.
 - **Autonomous Tool-Driven Retrieval**: Exposes vector similarity search as a callable tool for an autonomous agent.
 - **Evidence-Grounded Synthesis**: Enforces strict grounding rules where the agent cites exact numbers, metrics, and document pages rather than relying on pre-trained assumptions.
-- **Production-Style Streamlit AI Console**: An enterprise dark-themed intelligence workspace with live agent reasoning timelines, decision highlights, structured 5-section reports, expandable evidence citations, and architecture breakdowns.
+- **Radiant Premium Light Enterprise Console**: A production-grade 3-column enterprise workspace (OpenAI/Vercel/Stripe aesthetic) with live 6-stage agent reasoning, interactive citation deep-linking, right-side slide-over evidence drawer with exact similarity scores, and multi-turn session history.
 - **Flexible LLM Provider Support**: Replaces hard dependencies on local Ollama daemons with a unified provider layer supporting Groq (free, ultra-fast cloud inference for Llama 3 models), OpenAI, Google Gemini, Anthropic Claude, and local Ollama.
 
 ---
@@ -105,25 +105,27 @@ Based on the company's annual report, here is the verified performance summary:
 3. **BFSI (Banking & Financial Services)**: Grew **6.8% YoY** to $8.95 billion.
 ```
 
-### 3. Launching the Enterprise AI Console (Streamlit Demo)
-Launch the interactive web console with custom dark AI workspace theme:
+### 3. Launching the Enterprise AI Console (Radiant Light Theme)
+Launch the production-grade Enterprise Web Console (FastAPI backend + Radiant Light SPA):
 ```bash
-./run_demo.sh
+./run_app.sh
 ```
-Or directly via Streamlit:
+Or start via Uvicorn:
 ```bash
-streamlit run app.py
+python -m uvicorn agentic_rag.api:app --host 127.0.0.1 --port 8000
 ```
+Open **`http://127.0.0.1:8000`** in your browser.
 
-#### What the UI Displays:
-1. **Hero Header**: Live system status (`● LOCAL AI SYSTEM ONLINE`), badges for CrewAI, ChromaDB, Sentence-Transformers, and Ollama.
-2. **Interactive Two-Column Console**:
-   - **Left**: Query input with 4 one-click prompt chips, document metadata, and custom PDF ingestion accordion.
-   - **Right**: Real-time 6-stage agent reasoning timeline and high-visibility decision badge (*"Agent decided to use Financial Report Search"*).
-3. **Structured Final Answer**: Executive Summary, Key Findings, Important Numbers grid, Risks/Concerns, and Forward Outlook.
-4. **Evidence Panel ("Why I Believe This")**: Expandable source chunks with cosine relevance scores and page citations.
-5. **System Architecture**: Horizontal end-to-end component flow with 1-line explanations.
-6. **Traditional RAG vs Agentic RAG**: Side-by-side architectural comparison.
+#### What the Console Features:
+1. **Radiant Premium Light Aesthetic**: Clean white surfaces (`#FFFFFF`), crisp borders (`#E2E8F0`), high-contrast slate text (`#0F172A`), and purposeful Indigo / Cyan / Emerald accents.
+2. **Three-Column Responsive Workspace**:
+   - **Left Sidebar**: Multi-session conversation management (`⌘K` for New Analysis), Knowledge Base document inspector, and live system health diagnostics.
+   - **Center Chat Workspace**: Clean user bubbles, real-time 6-stage agent reasoning accordion, 5-section executive analyst report, and metric KPI grid.
+   - **Right Evidence Drawer (Slide-Over)**: Clickable citations (`[Source 01 • Page 23]` or `[1]`) deep-link directly into the drawer, scrolling to and highlighting exact source chunks with similarity scores, page numbers, and verbatim text.
+3. **Local Offline & Air-Gapped Workflows**: Runs 100% locally with zero external API dependencies required for embeddings and vector storage—vital for private, confidential data.
+4. **Cloud-Ready Deployment**: Includes `render.yaml` and production `Dockerfile` for seamless deployment to Render with automatic healthchecks (`/api/health`).
+
+*(Legacy Streamlit demo is also preserved via `streamlit run app.py`).*
 
 
 ---
